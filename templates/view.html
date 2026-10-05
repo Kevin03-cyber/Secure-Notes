@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Note – Secure Notes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <div class="page-header">
+      <a href="/" class="back-link">← Back</a>
+      <h2>🔒 {{ note['title'] }}</h2>
+      <span class="note-date">Saved on {{ note['created_at'][:16] }}</span>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if content %}
+      <div class="note-content-box">
+        <div class="unlocked-badge">🔓 Decrypted Successfully</div>
+        <p class="note-text">{{ content }}</p>
+      </div>
+
+      <div class="form-card danger-zone">
+        <h3>🗑️ Delete This Note</h3>
+        <p>Enter the password to permanently delete this note.</p>
+        <form method="POST" action="/delete/{{ note['id'] }}">
+          <div class="form-group">
+            <input type="password" name="password" placeholder="Enter password to confirm delete" required />
+          </div>
+          <button type="submit" class="btn-danger full-width">Delete Note</button>
+        </form>
+      </div>
+
+    {% else %}
+      <div class="form-card">
+        <p class="unlock-prompt">Enter the password you set when creating this note.</p>
+        <form method="POST">
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter note password" required
+              {% if wrong_password %}class="input-error"{% endif %} />
+          </div>
+          <button type="submit" class="btn-primary full-width">🔓 Decrypt Note</button>
+        </form>
+      </div>
+    {% endif %}
+
+  </div>
+</body>
+</html>

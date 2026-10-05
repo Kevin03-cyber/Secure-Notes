@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Note – Secure Notes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <div class="page-header">
+      <a href="/" class="back-link">← Back</a>
+      <h2>✏️ Create New Note</h2>
+      <p class="subtitle">Your note will be encrypted before saving.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="form-card">
+      <form method="POST">
+        <div class="form-group">
+          <label>Note Title</label>
+          <input type="text" name="title" placeholder="e.g. My Secret Plan" required />
+        </div>
+        <div class="form-group">
+          <label>Note Content</label>
+          <textarea name="content" rows="7" placeholder="Write your private note here..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Password (to lock this note)</label>
+          <input type="password" name="password" placeholder="Choose a strong password" required />
+          <small>⚠️ If you forget this password, the note cannot be recovered.</small>
+        </div>
+        <button type="submit" class="btn-primary full-width">🔐 Encrypt & Save</button>
+      </form>
+    </div>
+
+  </div>
+</body>
+</html>

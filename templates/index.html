@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure Notes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <div class="hero">
+      <h1>🔐 Secure Notes</h1>
+      <p class="subtitle">Your notes — encrypted, private, protected.</p>
+      <a href="/create" class="btn-primary">+ New Note</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="notes-section">
+      {% if notes %}
+        <h2>Your Notes</h2>
+        <div class="notes-grid">
+          {% for note in notes %}
+            <div class="note-card">
+              <div class="note-icon">🔒</div>
+              <div class="note-info">
+                <h3>{{ note['title'] }}</h3>
+                <span class="note-date">{{ note['created_at'][:16] }}</span>
+              </div>
+              <a href="/view/{{ note['id'] }}" class="btn-view">Unlock</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>🗒️ No notes yet.</p>
+          <p>Create your first encrypted note above!</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>

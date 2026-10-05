@@ -14,8 +14,9 @@ A web application that lets users create, store, and retrieve private notes prot
 
 
 ### Unlock a Note
-<img width="1892" height="975" alt="Screenshot 2026-10-05 221819" src="https://github.com/user-attachments/assets/7925e4f2-c324-4c5b-8531-74c1ed33d32a" />
-<img width="1892" height="975" alt="Screenshot 2026-10-05 221819" src="https://github.com/user-attachments/assets/86470fb6-6241-482a-981b-c7765629aae8" />
+<img width="1917" height="1078" alt="Screenshot 2026-10-05 221925" src="https://github.com/user-attachments/assets/9c88eba2-514d-414d-ae27-7ab999f7f2de" />
+<img width="1900" height="976" alt="Screenshot 2026-10-05 222039" src="https://github.com/user-attachments/assets/67ce1715-52f3-41a9-b6bf-e75ee98bf9eb" />
+
 
 ---
 

@@ -106,5 +106,3 @@ secure-notes/
 This app is built for **educational and portfolio purposes**. Notes are stored locally on your machine. Do not use this to store real sensitive information in a production environment.
 
 ---
-
-*Built as part of a cyber security student portfolio.*

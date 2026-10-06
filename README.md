@@ -71,7 +71,7 @@ After repeated incorrect passwords, the app temporarily prevents further unlock 
    python app.py
 5. Open http://127.0.0.1:5002 in your browser.
 The app creates its SQLite database locally when it starts.
-Project structure
+# Project structure
 secure-notes/
 ├── app.py
 ├── templates/

@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View Note – Secure Notes</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
   <div class="container">
     <div class="page-header">
-      <a href="/" class="back-link">← Back</a>
+      <a href="{{ url_for('index') }}" class="back-link">← Back</a>
       <h2>🔒 {{ note['title'] }}</h2>
       <span class="note-date">Saved on {{ note['created_at'][:16] }}</span>
     </div>
@@ -32,28 +31,74 @@
       <div class="form-card danger-zone">
         <h3>🗑️ Delete This Note</h3>
         <p>Enter the password to permanently delete this note.</p>
-        <form method="POST" action="/delete/{{ note['id'] }}">
+        <form method="POST" action="{{ url_for('delete', note_id=note['id']) }}">
           <div class="form-group">
-            <input type="password" name="password" placeholder="Enter password to confirm delete" required />
+            <label for="delete-password">Password</label>
+            <input
+              id="delete-password"
+              type="password"
+              name="password"
+              placeholder="Enter password to confirm delete"
+              required
+            >
           </div>
           <button type="submit" class="btn-danger full-width">Delete Note</button>
         </form>
       </div>
-
     {% else %}
+      {% set remaining = seconds_left|default(0, true)|int %}
+
       <div class="form-card">
+        {% if remaining > 0 %}
+          <div class="alert error" role="status">
+            🔒 This note is locked. Try again in
+             <strong id="countdown" data-seconds="{{ remaining }}">{{ remaining }}</strong>          </div>
+        {% endif %}
+
         <p class="unlock-prompt">Enter the password you set when creating this note.</p>
         <form method="POST">
           <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Enter note password" required
-              {% if wrong_password %}class="input-error"{% endif %} />
+            <label for="note-password">Password</label>
+            <input
+              id="note-password"
+              type="password"
+              name="password"
+              placeholder="Enter note password"
+              autocomplete="current-password"
+              required
+              {% if wrong_password|default(false) %}class="input-error"{% endif %}
+              {% if remaining > 0 %}disabled{% endif %}
+            >
           </div>
-          <button type="submit" class="btn-primary full-width">🔓 Decrypt Note</button>
+          <button
+            type="submit"
+            class="btn-primary full-width"
+            {% if remaining > 0 %}disabled{% endif %}
+          >
+            🔓 Decrypt Note
+          </button>
         </form>
       </div>
-    {% endif %}
 
+      {% if remaining > 0 %}
+        <script>
+          const countdown = document.getElementById('countdown');
+          let secondsLeft = Number(countdown.dataset.seconds);
+
+          const timer = setInterval(() => {
+            secondsLeft -= 1;
+
+            if (secondsLeft <= 0) {
+              clearInterval(timer);
+              window.location.reload();
+              return;
+            }
+
+            countdown.textContent = secondsLeft;
+          }, 1000);
+        </script>
+      {% endif %}
+    {% endif %}
   </div>
 </body>
 </html>

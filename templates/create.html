@@ -5,6 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>New Note – Secure Notes</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .strength { margin-top: 10px; }
+    .strength-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(128, 128, 128, 0.25);
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 4px;
+      transition: width 0.25s ease, background-color 0.25s ease;
+    }
+    .strength-label {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
 
@@ -24,7 +44,7 @@
     {% endwith %}
 
     <div class="form-card">
-      <form method="POST">
+      <form method="POST" id="noteForm">
         <div class="form-group">
           <label>Note Title</label>
           <input type="text" name="title" placeholder="e.g. My Secret Plan" required />
@@ -35,7 +55,11 @@
         </div>
         <div class="form-group">
           <label>Password (to lock this note)</label>
-          <input type="password" name="password" placeholder="Choose a strong password" required />
+          <input type="password" name="password" id="password" placeholder="Choose a strong password" required />
+          <div class="strength">
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <span class="strength-label" id="strengthLabel">Enter a password</span>
+          </div>
           <small>⚠️ If you forget this password, the note cannot be recovered.</small>
         </div>
         <button type="submit" class="btn-primary full-width">🔐 Encrypt & Save</button>
@@ -43,5 +67,59 @@
     </div>
 
   </div>
+
+  <script>
+    // Keep these rules identical to password_score() in app.py
+    const COMMON = ['password', '123456', '12345678', 'qwerty', 'letmein',
+                    'admin', 'welcome', 'iloveyou', 'abc123', 'monkey'];
+    const LABELS = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    const COLORS = ['#ff4444', '#ff9800', '#ffc107', '#8bc34a', '#2ecc71'];
+    const MIN_SCORE = 2;
+
+    function scorePassword(pw) {
+      if (!pw) return 0;
+      // "Password1!" -> "password": strip trailing digits/symbols before checking
+      const base = pw.toLowerCase().replace(/[0-9!@#$%]+$/, '');
+      if (COMMON.includes(base)) return 0;
+
+      let score = 0;
+      if (pw.length >= 8)  score++;
+      if (pw.length >= 12) score++;
+      if (pw.length >= 16) score++;
+      const classes = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/]
+        .filter(r => r.test(pw)).length;
+      if (classes >= 3) score++;
+      return score;
+    }
+
+    const pwInput = document.getElementById('password');
+    const fill = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    const form = document.getElementById('noteForm');
+
+    pwInput.addEventListener('input', () => {
+      const pw = pwInput.value;
+      if (!pw) {
+        fill.style.width = '0';
+        label.textContent = 'Enter a password';
+        label.style.color = '';
+        return;
+      }
+      const s = scorePassword(pw);
+      fill.style.width = ((s + 1) * 20) + '%';
+      fill.style.backgroundColor = COLORS[s];
+      label.textContent = 'Strength: ' + LABELS[s];
+      label.style.color = COLORS[s];
+    });
+
+    form.addEventListener('submit', (e) => {
+      if (scorePassword(pwInput.value) < MIN_SCORE) {
+        e.preventDefault();
+        label.textContent = 'Too weak to save. Make it longer or mix letters, numbers and symbols.';
+        label.style.color = COLORS[0];
+        pwInput.focus();
+      }
+    });
+  </script>
 </body>
 </html>

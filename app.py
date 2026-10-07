@@ -4,6 +4,7 @@ import os
 import base64
 import time
 import math
+import re
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 from cryptography.fernet import Fernet, InvalidToken
@@ -104,6 +105,8 @@ def reset_failures(conn, note_id):
     )
     conn.commit()
 
+    
+
 # ── Routes ────────────────────────────────────────────────
 @app.route('/')
 def index():
@@ -123,7 +126,11 @@ def create():
 
         if not title or not content or not password:
             flash('All fields are required!', 'error')
+            if password_score(password) < MIN_PASSWORD_SCORE:
+                flash('Password is too weak. Use at least 8 characters mixing letters, '
+                  'numbers and symbols, or a longer passphrase.', 'error')
             return render_template('create.html')
+
 
         encrypted_content, salt = encrypt_note(content, password)
 
